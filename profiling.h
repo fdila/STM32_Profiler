@@ -1,8 +1,9 @@
 #ifndef _PROFILING_H
 #define _PROFILING_H
 
-#include "stm32f30x.h"
-//#include "stm32f1xx_hal.h"
+//change this for the mcu you are using
+#include "stm32f7xx.h"
+
 #include <stdint.h>
 #include <stdio.h>
 
@@ -13,3 +14,4 @@ void PROFILING_EVENT(const char *event);
 void PROFILING_STOP(void);
 
 #endif // _PROFILING_H
+

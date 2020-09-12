@@ -3,7 +3,7 @@
  Title        : PROFILER
  Description  : Code time profiler with output to ITM Stimulus Port 0
                 Debug (printf) Viewer
-                Time accuracy 1µS
+                Time accuracy 1uS
 
                 Examle output:
                 Profiling "Start" sequence:
@@ -13,14 +13,19 @@
                 u8g_SetFont                   :     5292 us | +        4 us
                 HAL_Delay(10)                 : 10004967 us | +  9999675 us
 
+ Original
  Author       : Serj Bashlayev
                 https://github.com/Serj-Bashlayev
                 email: phreak_ua@yahoo.com
+
+ Updated by   : Federica Di Lauro
+ 	 	 	 	https://github.com/fdila
+
  Created      : 16/08/2016
- Revised      : 04/10/2018
- Version      : 3.0
+ Revised      : 12/09/2020
+ Version      : 4.0
  Target MCU   : STM32
- Compiler     : ARM Compiler v5.04 for µVision armcc
+ Compiler     : arm-none-eabi-gcc
  Editor Tabs  : 2
 ***********************************************************************/
 
@@ -42,19 +47,24 @@ static uint8_t    event_count = __PROF_STOPED; // events counter
 /* Private function prototypes ---------------------------------------*/
 /* -------------------------------------------------------------------*/
 
-/**
- * redefinition fputc() for output printf(..) to ITM Stimulus Port 0
- */
+
 struct __FILE { int handle; /* Add whatever needed */ };
 FILE __stdout;
 FILE __stdin;
 
-int fputc(int ch, FILE *f)
-{
-  ITM_SendChar(ch);
-  return(ch);
-}
 
+/**
+ * redefinition _write() for output printf(..) to ITM Stimulus Port 0
+ */
+
+int _write(int32_t file, uint8_t *ptr, int32_t len)
+{
+   int i=0;
+     for(i=0 ; i<len ; i++)
+       ITM_SendChar((*ptr++));
+     return len;
+   return -1;
+}
 
 /**
  * @brief Start profiler, save profiler name and start time
@@ -68,7 +78,6 @@ void PROFILING_START(const char *profile_name)
 
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
   DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk; // enable counter
-  //DWT->CYCCNT  = time_start = 0;
   time_start = DWT->CYCCNT;
 }
 
@@ -119,9 +128,11 @@ void PROFILING_STOP(void)
     timestamp = (time_event[i] - time_start) / tick_per_1us;
     delta_t = timestamp - time_prev;
     time_prev = timestamp;
-    DEBUG_PRINTF("%-30s:%9d µs | +%9d µs\r\n", event_name[i], timestamp, delta_t);
+    DEBUG_PRINTF("%-30s:%9ld us | +%9ld us\r\n", event_name[i], timestamp, delta_t);
   }
   DEBUG_PRINTF("\r\n");
+
   event_count = __PROF_STOPED;
 }
+
 
