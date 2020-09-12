@@ -92,10 +92,13 @@ Wait for update Tick          :      797 µs | +      795 µs
 DELAY 1 s                     :  1000797 µs | +   999999 µs
 
 ```
-![Keil µVision Debug (printf) Viewer](Image/debug.png)
--------------   
-For more information, how to use the Keil µVision Debug (printf) Viewer see  http://www.keil.com/support/man/docs/ulink2/ulink2_trace_itm_viewer.htm   
-You can also use ST-LINK - Printf via SWO viewer feature or other debugging software with SWO Viewer support.
+**How to use printf with STM32CubeIde**
+- Enable SWO in CubeMX.
+- Launch debug session
+- Go to: Window > Show View > SWV > ITM Data Console
+- Go to the settings of ITM Data Console
+- Enable ITM Stimulus Port number 0
+- Click the red circle to start recording
 
 -------------   
 <a name="notes"></a>`note 1` The maximum number of events is defined in MAX_EVENT_COUNT (profiling.h)
